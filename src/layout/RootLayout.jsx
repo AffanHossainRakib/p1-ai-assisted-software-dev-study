@@ -9,8 +9,7 @@ const NAV_ITEMS = [
 ];
 
 function navLinkClass({ isActive }) {
-  const base =
-    "rounded-md px-3 py-2 text-sm font-medium transition-colors";
+  const base = "rounded-md px-3 py-2 text-sm font-medium transition-colors";
   return isActive
     ? `${base} bg-indigo-600 text-white`
     : `${base} text-slate-600 hover:bg-slate-100 hover:text-slate-900`;
