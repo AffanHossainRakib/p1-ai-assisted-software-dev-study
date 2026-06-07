@@ -1,9 +1,8 @@
 // Single source of truth for all collections. Hydrates from localStorage
 // (seeding on first run) and persists every mutation back.
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { STORAGE_KEYS, loadAll, save } from "../lib/storage";
-
-const DataContext = createContext(null);
+import { DataContext } from "./data-context";
 
 export function DataProvider({ children }) {
   const [data, setData] = useState(() => loadAll());
@@ -11,7 +10,10 @@ export function DataProvider({ children }) {
   // Keep each collection mirrored to localStorage whenever it changes.
   useEffect(() => save(STORAGE_KEYS.students, data.students), [data.students]);
   useEffect(() => save(STORAGE_KEYS.courses, data.courses), [data.courses]);
-  useEffect(() => save(STORAGE_KEYS.enrollments, data.enrollments), [data.enrollments]);
+  useEffect(
+    () => save(STORAGE_KEYS.enrollments, data.enrollments),
+    [data.enrollments],
+  );
   useEffect(() => save(STORAGE_KEYS.grades, data.grades), [data.grades]);
 
   const addStudent = useCallback((student) => {
@@ -19,7 +21,10 @@ export function DataProvider({ children }) {
   }, []);
 
   const addEnrollment = useCallback((enrollment) => {
-    setData((prev) => ({ ...prev, enrollments: [...prev.enrollments, enrollment] }));
+    setData((prev) => ({
+      ...prev,
+      enrollments: [...prev.enrollments, enrollment],
+    }));
   }, []);
 
   const addGrade = useCallback((grade) => {
@@ -37,12 +42,4 @@ export function DataProvider({ children }) {
   };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
-}
-
-export function useData() {
-  const ctx = useContext(DataContext);
-  if (!ctx) {
-    throw new Error("useData must be used within a DataProvider");
-  }
-  return ctx;
 }
